@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restore Lost WebGL Context After Hardware Reset - webgl</title>
+    <meta name="description" content="Handling WebGL context loss is an essential requirement for building resilient web graphics applications. When a GPU experiences a hardware reset, driver update, or resource exhaustion, the browser discards the WebGL context and wipes all stored GPU resou">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/restore-lost-web-gl-context-after-hardware-reset">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Restore Lost WebGL Context After Hardware Reset - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/restore-lost-web-gl-context-after-hardware-reset" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Handling WebGL context loss is an essential requirement for building resilient web graphics applications. When a GPU experiences a hardware reset, driver update, or resource exhaustion, the browser discards the WebGL context and wipes all stored GPU resou" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="restore-lost-webgl-context-after-hardware-reset">Restore Lost
+WebGL Context After Hardware Reset</h1>
+<p>Handling WebGL context loss is an essential requirement for building
+resilient web graphics applications. When a GPU experiences a hardware
+reset, driver update, or resource exhaustion, the browser discards the
+WebGL context and wipes all stored GPU resources. Restoring the context
+involves capturing context-loss events, preventing the browser's default
+abort behavior, reinitializing rendering pipelines, and reloading all
+textures, buffers, and shaders once the hardware becomes available
+again.</p>
+<h3 id="1-intercept-the-context-lost-event">1. Intercept the Context
+Lost Event</h3>
+<p>When the graphics card resets, the canvas fires the
+<code>webglcontextlost</code> event. By default, browsers treat this
+event as fatal and will not attempt to restore the context. To allow
+recovery, you must add an event listener and call
+<code>event.preventDefault()</code>.</p>
+<p>At this stage, you must also stop your render loop to prevent your
+application from issuing commands to an invalid context.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&quot;glcanvas&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> animationFrameId<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>canvas<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&quot;webglcontextlost&quot;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">event</span><span class="op">.</span><span class="fu">preventDefault</span>()<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cancelAnimationFrame</span>(animationFrameId)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&quot;WebGL context lost. Pausing rendering...&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> <span class="kw">false</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="2-listen-for-context-restoration">2. Listen for Context
+Restoration</h3>
+<p>Once the operating system and GPU stabilize, the browser creates a
+new underlying graphics context and dispatches the
+<code>webglcontextrestored</code> event to the canvas.</p>
+<p>Attach an event listener for <code>webglcontextrestored</code> to
+trigger your resource reconstruction logic:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>canvas<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&quot;webglcontextrestored&quot;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;WebGL context restored. Rebuilding resources...&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reinitializeWebGL</span>()<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> <span class="kw">false</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="3-re-create-all-gpu-resources">3. Re-create All GPU
+Resources</h3>
+<p>A restored WebGL context is completely blank. The original
+<code>WebGLRenderingContext</code> or
+<code>WebGL2RenderingContext</code> instance remains the same JavaScript
+reference, but all previously allocated WebGL objects are invalid.</p>
+<p>Your initialization routine must explicitly re-execute the following
+tasks:</p>
+<ul>
+<li><strong>Shaders and Programs:</strong> Recompile vertex and fragment
+shaders, attach them to new program objects, and re-link them.</li>
+<li><strong>Uniform Locations:</strong> Query and cache all uniform and
+attribute locations from the newly linked programs.</li>
+<li><strong>Buffers:</strong> Generate new vertex buffer objects (VBOs)
+and index buffers (IBOs), binding them and repopulating them with your
+geometry data.</li>
+<li><strong>Textures:</strong> Recreate texture objects, set texture
+parameters (filtering, wrapping), and re-upload image data to the
+GPU.</li>
+<li><strong>Framebuffers and Renderbuffers:</strong> Reallocate any
+off-screen render targets and depth/stencil buffers.</li>
+<li><strong>State Settings:</strong> Re-enable required states, such as
+depth testing (<code>gl.DEPTH_TEST</code>), blending modes, cull face
+settings, and clear colors.</li>
+</ul>
+<h3 id="4-restart-the-render-loop">4. Restart the Render Loop</h3>
+<p>After all assets and states are fully loaded back into the GPU,
+resume the application's render loop.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">reinitializeWebGL</span>() {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;webgl2&quot;</span>) <span class="op">||</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;webgl&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initShaders</span>(gl)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initBuffers</span>(gl)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initTextures</span>(gl)<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Restart animation loop</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">render</span>()<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">render</span>() {</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">drawScene</span>()<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    animationFrameId <span class="op">=</span> <span class="fu">requestAnimationFrame</span>(render)<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="testing-the-restoration-workflow">Testing the Restoration
+Workflow</h3>
+<p>You can simulate hardware resets without crashing your system by
+using the <code>WEBGL_lose_context</code> extension. This extension
+allows you to programmatically trigger context loss and restoration to
+ensure your application recovers smoothly:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ext <span class="op">=</span> gl<span class="op">.</span><span class="fu">getExtension</span>(<span class="st">&quot;WEBGL_lose_context&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Simulate context loss</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ext<span class="op">.</span><span class="fu">loseContext</span>()<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Simulate recovery after 2 seconds</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="pp">setTimeout</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ext<span class="op">.</span><span class="fu">restoreContext</span>()<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> <span class="dv">2000</span>)<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What OpenGL ES Version Is WebGL 2.0 Based On? - webgl</title>
+    <meta name="description" content="WebGL 2.0 represents a major evolutionary leap for 3D graphics inside modern web browsers, providing near-native rendering capabilities without external plugins. This article explores the precise embedded graphics specification that serves as the strict t">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/what-open-gl-es-version-is-web-gl-2-0-based-on">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What OpenGL ES Version Is WebGL 2.0 Based On? - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/what-open-gl-es-version-is-web-gl-2-0-based-on" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WebGL 2.0 represents a major evolutionary leap for 3D graphics inside modern web browsers, providing near-native rendering capabilities without external plugins. This article explores the precise embedded graphics specification that serves as the strict t" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-opengl-es-version-is-webgl-20-based-on">What OpenGL ES
+Version Is WebGL 2.0 Based On?</h1>
+<p>WebGL 2.0 represents a major evolutionary leap for 3D graphics inside
+modern web browsers, providing near-native rendering capabilities
+without external plugins. This article explores the precise embedded
+graphics specification that serves as the strict technical foundation
+for WebGL 2.0, explains how this standard differs from its predecessor,
+and breaks down the core hardware features introduced by this underlying
+architectural baseline.</p>
+<h3 id="the-foundation-opengl-es-30">The Foundation: OpenGL ES 3.0</h3>
+<p>WebGL 2.0 is strictly based on <strong>OpenGL ES 3.0</strong> (OpenGL
+for Embedded Systems 3.0). Standardized by the Khronos Group, the WebGL
+2.0 specification was explicitly designed to expose the full feature set
+and API conventions of OpenGL ES 3.0 directly to the web platform via
+JavaScript.</p>
+<p>Just as WebGL 1.0 was built as an almost direct mapping to OpenGL ES
+2.0, WebGL 2.0 acts as a corresponding mapping to OpenGL ES 3.0. This
+guarantees backward compatibility with WebGL 1.0 while introducing
+advanced programmable pipeline features that were standard in mobile and
+desktop hardware supporting ES 3.0.</p>
+<h3 id="major-capabilities-inherited-from-opengl-es-30">Major
+Capabilities Inherited from OpenGL ES 3.0</h3>
+<p>By adopting OpenGL ES 3.0 as its baseline, WebGL 2.0 eliminated the
+need for many optional extensions that developers previously relied on
+in WebGL 1.0. The standard brings several native features to the
+browser:</p>
+<ul>
+<li><strong>GLSL ES 3.00 Shading Language:</strong> WebGL 2.0 upgraded
+from GLSL ES 1.00 to 3.00. This brought support for non-square matrices,
+explicit integer types, bitwise operations, full texture querying
+functions, and modern <code>in</code>/<code>out</code> storage
+qualifiers replacing legacy <code>attribute</code> and
+<code>varying</code> syntax.</li>
+<li><strong>Transform Feedback:</strong> This feature allows vertex
+shader outputs to be recorded directly back into buffer objects without
+passing through the rasterizer, enabling advanced GPU-based particle
+physics and geometry generation.</li>
+<li><strong>Multiple Render Targets (MRT):</strong> Shaders can output
+to multiple color buffers simultaneously, a critical requirement for
+deferred shading pipelines and advanced post-processing effects.</li>
+<li><strong>Uniform Buffer Objects (UBOs):</strong> UBOs allow
+developers to group uniforms together and share them efficiently across
+multiple shader programs, dramatically reducing CPU overhead when
+passing state to the GPU.</li>
+<li><strong>Expanded Texture Features:</strong> Support for 3D textures,
+2D texture arrays, depth textures, multisampled renderbuffers, and
+floating-point render targets are guaranteed core features rather than
+hardware-dependent extensions.</li>
+<li><strong>Instanced Rendering:</strong> Instancing allows thousands of
+identical meshes (such as trees, grass, or particles) to be drawn in a
+single draw call with distinct transformations.</li>
+</ul>
+<h3 id="architectural-significance">Architectural Significance</h3>
+<p>By binding the specification to OpenGL ES 3.0, the Khronos Group
+ensured that WebGL 2.0 matches modern mobile and desktop GPU baselines.
+Underlying graphics translation layers—such as Google's ANGLE (Almost
+Native Graphics Layer Engine)—can reliably translate these OpenGL ES 3.0
+instructions into Direct3D 11, Metal, or Vulkan depending on the client
+platform, ensuring consistent performance and visual parity across all
+major operating systems and devices.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

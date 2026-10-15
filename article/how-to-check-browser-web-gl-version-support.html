@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Check Browser WebGL Version Support - webgl</title>
+    <meta name="description" content="WebGL enables high-performance 2D and 3D interactive graphics within any compatible web browser without requiring third-party plugins. This article provides a quick guide to determining the exact WebGL version (such as WebGL 1.0 or WebGL 2.0) supported by">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/how-to-check-browser-web-gl-version-support">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Check Browser WebGL Version Support - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/how-to-check-browser-web-gl-version-support" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WebGL enables high-performance 2D and 3D interactive graphics within any compatible web browser without requiring third-party plugins. This article provides a quick guide to determining the exact WebGL version (such as WebGL 1.0 or WebGL 2.0) supported by" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-check-browser-webgl-version-support">How to Check Browser
+WebGL Version Support</h1>
+<p>WebGL enables high-performance 2D and 3D interactive graphics within
+any compatible web browser without requiring third-party plugins. This
+article provides a quick guide to determining the exact WebGL version
+(such as WebGL 1.0 or WebGL 2.0) supported by your current browser,
+covering methods via developer console commands, built-in browser status
+pages, and diagnostic websites.</p>
+<h3 id="method-1-using-the-developer-console-javascript">Method 1: Using
+the Developer Console (JavaScript)</h3>
+<p>The most direct way to check WebGL version support programmatically
+is through the browser's developer tools.</p>
+<ol type="1">
+<li>Open your browser's Developer Tools by pressing <code>F12</code> (or
+<code>Ctrl + Shift + I</code> on Windows/Linux,
+<code>Cmd + Option + I</code> on macOS).</li>
+<li>Click on the <strong>Console</strong> tab.</li>
+<li>Paste and run the following snippet:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;canvas&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl2 <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;webgl2&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;webgl&#39;</span>) <span class="op">||</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;experimental-webgl&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (gl2) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Supported: &quot;</span> <span class="op">+</span> gl2<span class="op">.</span><span class="fu">getParameter</span>(gl2<span class="op">.</span><span class="at">VERSION</span>))<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Shading Language: &quot;</span> <span class="op">+</span> gl2<span class="op">.</span><span class="fu">getParameter</span>(gl2<span class="op">.</span><span class="at">SHADING_LANGUAGE_VERSION</span>))<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (gl) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Supported: &quot;</span> <span class="op">+</span> gl<span class="op">.</span><span class="fu">getParameter</span>(gl<span class="op">.</span><span class="at">VERSION</span>))<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Shading Language: &quot;</span> <span class="op">+</span> gl<span class="op">.</span><span class="fu">getParameter</span>(gl<span class="op">.</span><span class="at">SHADING_LANGUAGE_VERSION</span>))<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;WebGL is not supported on this browser.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>If the browser supports WebGL 2, the output will start with
+<code>WebGL 2.0</code>. If it only supports the older standard, it will
+output <code>WebGL 1.0</code>.</p>
+<h3 id="method-2-inspecting-internal-browser-diagnostics">Method 2:
+Inspecting Internal Browser Diagnostics</h3>
+<p>Most modern browsers offer internal configuration pages that detail
+hardware acceleration and graphic API support.</p>
+<ul>
+<li><strong>Google Chrome, Microsoft Edge, Brave, and Opera:</strong>
+Type <code>chrome://gpu</code> (or <code>edge://gpu</code> in Edge) into
+your address bar and press Enter. Look for the <strong>Graphics Feature
+Status</strong> section. Check the entries for <strong>WebGL</strong>
+and <strong>WebGL2</strong> to see if they are labeled "Hardware
+accelerated."</li>
+<li><strong>Mozilla Firefox:</strong> Type <code>about:support</code>
+into the address bar and press Enter. Scroll down to the
+<strong>Graphics</strong> section to review details under <strong>WebGL
+1 Driver Version</strong> and <strong>WebGL 2 Driver
+Version</strong>.</li>
+<li><strong>Apple Safari:</strong> Ensure the "Develop" menu is enabled
+under Safari Settings &gt; Advanced. WebGL 2 is enabled by default in
+modern Safari releases, but you can inspect feature toggles under
+Develop &gt; Feature Flags.</li>
+</ul>
+<h3 id="method-3-using-webgl-test-websites">Method 3: Using WebGL Test
+Websites</h3>
+<p>If you prefer a graphical interface without using code:</p>
+<ol type="1">
+<li>Navigate to diagnostic websites such as <code>webglreport.com</code>
+or <code>get.webgl.org</code>.</li>
+<li>These tools automatically detect the active context and display tabs
+for WebGL 1 and WebGL 2, detailing driver version numbers, supported
+extensions, maximum texture sizes, and the GPU hardware currently
+handling rendering tasks.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

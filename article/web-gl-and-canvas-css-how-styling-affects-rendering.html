@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL and Canvas CSS: How Styling Affects Rendering - webgl</title>
+    <meta name="description" content="Applying CSS styling directly to an HTML5 canvas hosting a WebGL context creates a clear separation between the canvas&#39;s internal drawing buffer and its visual representation on the web page. While WebGL renders pixels directly into the canvas&#39;s internal">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/web-gl-and-canvas-css-how-styling-affects-rendering">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WebGL and Canvas CSS: How Styling Affects Rendering - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/web-gl-and-canvas-css-how-styling-affects-rendering" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Applying CSS styling directly to an HTML5 canvas hosting a WebGL context creates a clear separation between the canvas&#39;s internal drawing buffer and its visual representation on the web page. While WebGL renders pixels directly into the canvas&#39;s internal" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="webgl-and-canvas-css-how-styling-affects-rendering">WebGL and
+Canvas CSS: How Styling Affects Rendering</h1>
+<p>Applying CSS styling directly to an HTML5 canvas hosting a WebGL
+context creates a clear separation between the canvas's internal drawing
+buffer and its visual representation on the web page. While WebGL
+renders pixels directly into the canvas's internal buffer determined by
+HTML attributes, CSS controls how that resulting image is sized,
+positioned, and composited within the browser's Document Object Model
+(DOM). Mismatches between these two systems can lead to distorted or
+blurry graphics, but understanding their interaction allows developers
+to properly scale, transform, and blend WebGL scenes within modern
+responsive layouts.</p>
+<h2 id="drawing-buffer-size-vs-display-size">Drawing Buffer Size vs.
+Display Size</h2>
+<p>The most critical interaction between WebGL and CSS involves the
+difference between the canvas drawing buffer and its display size:</p>
+<ul>
+<li><strong>Drawing Buffer (<code>width</code> and <code>height</code>
+HTML attributes):</strong> Defines the actual number of pixels WebGL
+renders to. If set to
+<code>&lt;canvas width="800" height="600"&gt;</code>, WebGL operates
+within an 800x600 pixel grid.</li>
+<li><strong>Display Size (CSS <code>width</code> and <code>height</code>
+properties):</strong> Dictates the layout space the element occupies on
+the screen (for example,
+<code>canvas { width: 100%; height: 100vh; }</code>).</li>
+</ul>
+<p>When CSS styles resize the canvas element without updating its HTML
+attributes, the browser automatically stretches or shrinks the rendered
+WebGL buffer to fit the CSS dimensions. This image-stretching behavior
+uses basic bilinear filtering, which produces a blurry image if enlarged
+or a distorted image if the CSS aspect ratio does not match the drawing
+buffer's aspect ratio.</p>
+<h2 id="synchronizing-css-and-the-webgl-viewport">Synchronizing CSS and
+the WebGL Viewport</h2>
+<p>To maintain crisp graphics and accurate proportions in responsive
+layouts, the canvas buffer must be synchronized with its CSS display
+dimensions using JavaScript:</p>
+<ol type="1">
+<li>Read the element's layout dimensions using
+<code>canvas.clientWidth</code> and
+<code>canvas.clientHeight</code>.</li>
+<li>Account for high-density screens by multiplying these dimensions by
+<code>window.devicePixelRatio</code>.</li>
+<li>Set <code>canvas.width</code> and <code>canvas.height</code> to
+these calculated values.</li>
+<li>Update the WebGL drawing region by calling
+<code>gl.viewport(0, 0, canvas.width, canvas.height)</code>.</li>
+</ol>
+<p>Without calling <code>gl.viewport()</code> after a resize, WebGL
+continues drawing into a sub-region or beyond the bounds of the newly
+resized buffer.</p>
+<h2 id="css-layout-transforms-and-layer-compositing">CSS Layout,
+Transforms, and Layer Compositing</h2>
+<p>Once WebGL renders a frame, the browser treats the canvas as a
+standard bitmap layer in the DOM tree. Consequently, modern CSS layout
+systems and transformations interact with the canvas without modifying
+the 3D scene data:</p>
+<ul>
+<li><strong>CSS Transforms (<code>transform: rotate()</code>,
+<code>scale()</code>, <code>translate()</code>):</strong> These modify
+the rendered canvas quad as a 2D or 3D element in the DOM. This allows
+hardware-accelerated movement or rotation of the entire canvas without
+triggering a WebGL redraw.</li>
+<li><strong>Borders, Margins, and Padding:</strong> CSS spacing rules
+apply around the canvas perimeter. Padding does not push WebGL content
+inward; the buffer renders behind or within the padding area depending
+on <code>box-sizing</code> rules.</li>
+<li><strong>Filters (<code>filter: blur()</code>,
+<code>contrast()</code>, <code>hue-rotate()</code>):</strong> Modern
+browsers apply CSS post-processing filters directly over the finished
+WebGL output layer.</li>
+</ul>
+<h2 id="transparency-and-alpha-compositing">Transparency and Alpha
+Compositing</h2>
+<p>WebGL output interacts directly with underlying DOM elements through
+CSS background and opacity properties.</p>
+<p>When initializing the WebGL context with
+<code>gl.getContext('webgl', { alpha: true })</code> (which is default
+behavior), any clear colors or fragments with an alpha value lower than
+<code>1.0</code> reveal whatever sits behind the canvas. This allows
+HTML elements, CSS backgrounds, or video elements placed behind the
+canvas to show through the 3D scene. Setting
+<code>{ alpha: false }</code> instructs the browser to ignore
+transparency, improving rendering performance and ensuring the canvas
+background remains completely opaque regardless of CSS background
+declarations.</p>
+<p>Furthermore, CSS properties such as <code>opacity</code> and
+<code>mix-blend-mode</code> apply to the entire canvas element during
+the browser's compositing stage, enabling the WebGL layer to multiply,
+screen, or overlay seamlessly against surrounding web content.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

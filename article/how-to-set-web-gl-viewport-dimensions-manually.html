@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Set WebGL Viewport Dimensions Manually - webgl</title>
+    <meta name="description" content="This article explains how to manually set the viewport dimensions in WebGL using the gl.viewport() method. You will learn the syntax of this function, what each parameter represents, how WebGL maps coordinates to screen space, and how to properly handle v">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/how-to-set-web-gl-viewport-dimensions-manually">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Set WebGL Viewport Dimensions Manually - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/how-to-set-web-gl-viewport-dimensions-manually" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how to manually set the viewport dimensions in WebGL using the gl.viewport() method. You will learn the syntax of this function, what each parameter represents, how WebGL maps coordinates to screen space, and how to properly handle v" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-set-webgl-viewport-dimensions-manually">How to Set WebGL
+Viewport Dimensions Manually</h1>
+<p>This article explains how to manually set the viewport dimensions in
+WebGL using the <code>gl.viewport()</code> method. You will learn the
+syntax of this function, what each parameter represents, how WebGL maps
+coordinates to screen space, and how to properly handle viewport updates
+when resizing the HTML5 canvas to prevent visual distortion.</p>
+<p>The method used to manually set the WebGL viewport dimensions is
+<code>gl.viewport()</code>. This function specifies the affine
+transformation of <span class="math inline">\(x\)</span> and <span
+class="math inline">\(y\)</span> from normalized device coordinates
+(which range from -1 to 1) to window coordinates (pixel space on the
+canvas).</p>
+<h3 id="syntax-and-parameters">Syntax and Parameters</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>gl<span class="op">.</span><span class="fu">viewport</span>(x<span class="op">,</span> y<span class="op">,</span> width<span class="op">,</span> height)<span class="op">;</span></span></code></pre></div>
+<ul>
+<li><strong><code>x</code></strong>: A <code>GLint</code> specifying the
+horizontal coordinate for the lower-left corner of the viewport origin.
+The default is <code>0</code>.</li>
+<li><strong><code>y</code></strong>: A <code>GLint</code> specifying the
+vertical coordinate for the lower-left corner of the viewport origin.
+The default is <code>0</code>.</li>
+<li><strong><code>width</code></strong>: A <code>GLsizei</code>
+specifying the width of the viewport in pixels.</li>
+<li><strong><code>height</code></strong>: A <code>GLsizei</code>
+specifying the height of the viewport in pixels.</li>
+</ul>
+<p>In WebGL, the origin <code>(0, 0)</code> is located at the
+bottom-left corner of the canvas, unlike standard CSS or 2D canvas
+contexts where the origin is at the top-left.</p>
+<h3 id="basic-implementation">Basic Implementation</h3>
+<p>When initializing your WebGL context, you typically match the
+viewport to the internal resolution of the canvas:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&quot;glcanvas&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;webgl&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Set the viewport to cover the entire canvas drawing buffer</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>gl<span class="op">.</span><span class="fu">viewport</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> canvas<span class="op">.</span><span class="at">width</span><span class="op">,</span> canvas<span class="op">.</span><span class="at">height</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="handling-window-and-canvas-resizing">Handling Window and Canvas
+Resizing</h3>
+<p>Setting the viewport once during initialization is insufficient if
+the canvas changes size dynamically. If the drawing buffer changes and
+<code>gl.viewport()</code> is not called again, the rendered image will
+appear stretched, squashed, or clipped.</p>
+<p>To handle dynamic sizing, synchronize the canvas drawing buffer with
+its display size and update the viewport prior to rendering:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">resizeCanvasToDisplaySize</span>(canvas) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> displayWidth <span class="op">=</span> canvas<span class="op">.</span><span class="at">clientWidth</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> displayHeight <span class="op">=</span> canvas<span class="op">.</span><span class="at">clientHeight</span><span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> needResize <span class="op">=</span> canvas<span class="op">.</span><span class="at">width</span> <span class="op">!==</span> displayWidth <span class="op">||</span> canvas<span class="op">.</span><span class="at">height</span> <span class="op">!==</span> displayHeight<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (needResize) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    canvas<span class="op">.</span><span class="at">width</span> <span class="op">=</span> displayWidth<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    canvas<span class="op">.</span><span class="at">height</span> <span class="op">=</span> displayHeight<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> needResize<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">render</span>() {</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">resizeCanvasToDisplaySize</span>(gl<span class="op">.</span><span class="at">canvas</span>)) {</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    gl<span class="op">.</span><span class="fu">viewport</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> gl<span class="op">.</span><span class="at">canvas</span><span class="op">.</span><span class="at">width</span><span class="op">,</span> gl<span class="op">.</span><span class="at">canvas</span><span class="op">.</span><span class="at">height</span>)<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Draw scene...</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">requestAnimationFrame</span>(render)<span class="op">;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">requestAnimationFrame</span>(render)<span class="op">;</span></span></code></pre></div>
+<h3 id="viewport-vs-canvas-size">Viewport vs. Canvas Size</h3>
+<p>The viewport does not alter the size of the canvas element itself; it
+only dictates where WebGL draws inside the canvas drawing buffer.
+Setting the viewport smaller than the canvas dimensions will cause
+rendering to occupy only a sub-region of the canvas, which can be useful
+for split-screen rendering or UI overlays.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

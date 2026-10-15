@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architectural Differences Between WebGL and WebGPU - webgl</title>
+    <meta name="description" content="This article examines the primary architectural differences between WebGL and WebGPU, tracing the evolution from the legacy OpenGL state machine to modern, explicit GPU programming on the web. It covers key distinctions in native API mapping, state manage">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/architectural-differences-between-web-gl-and-web-gpu">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Architectural Differences Between WebGL and WebGPU - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/architectural-differences-between-web-gl-and-web-gpu" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines the primary architectural differences between WebGL and WebGPU, tracing the evolution from the legacy OpenGL state machine to modern, explicit GPU programming on the web. It covers key distinctions in native API mapping, state manage" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="architectural-differences-between-webgl-and-webgpu">Architectural
+Differences Between WebGL and WebGPU</h1>
+<p>This article examines the primary architectural differences between
+WebGL and WebGPU, tracing the evolution from the legacy OpenGL state
+machine to modern, explicit GPU programming on the web. It covers key
+distinctions in native API mapping, state management, command recording,
+resource binding, compute shader capabilities, and shading languages,
+providing a clear overview of how WebGPU reduces CPU overhead and
+unlocks modern hardware features.</p>
+<h3 id="underlying-native-apis-and-abstraction-level">Underlying Native
+APIs and Abstraction Level</h3>
+<p>WebGL is a JavaScript binding based on OpenGL ES (2.0 for WebGL 1.0,
+3.0 for WebGL 2.0), an API designed in the early 1990s. It operates at a
+high level of abstraction, delegating significant control,
+synchronization, and memory management to the browser and the underlying
+graphics driver.</p>
+<p>In contrast, WebGPU is designed from the ground up to reflect modern
+native graphics APIs: Vulkan, Apple Metal, and Microsoft DirectX 12.
+Instead of exposing a legacy API to the browser, WebGPU provides an
+explicit, lower-level programming model that maps directly to how modern
+GPU architectures operate, dramatically reducing driver-level CPU
+overhead.</p>
+<h3 id="global-state-machine-vs-pipeline-objects">Global State Machine
+vs. Pipeline Objects</h3>
+<p>The core execution model represents the most profound difference
+between the two technologies:</p>
+<ul>
+<li><strong>WebGL (State Machine):</strong> WebGL operates as a massive,
+mutable global state machine. Setting up a draw call requires mutating
+state incrementally (e.g., binding buffers, switching shaders, enabling
+blend modes). Because states can change independently at any time, the
+browser and GPU driver must validate the entire state setup at the
+moment a draw call (<code>gl.drawArrays</code> or
+<code>gl.drawElements</code>) is issued, leading to significant CPU
+bottlenecks.</li>
+<li><strong>WebGPU (Pipelines):</strong> WebGPU eliminates the global
+state machine in favor of immutable Pipeline State Objects (PSOs). All
+states required for rendering—such as vertex layouts, shader stages,
+blend modes, and depth-stencil states—are baked into a
+<code>GPURenderPipeline</code> ahead of time. Because the GPU driver
+validates the pipeline configuration at creation rather than during the
+render loop, draw call execution involves minimal validation and
+overhead.</li>
+</ul>
+<h3 id="command-execution-and-recording">Command Execution and
+Recording</h3>
+<p>WebGL issues commands synchronously. When a method like
+<code>gl.drawArrays()</code> is called, it translates immediately into
+an instruction for the underlying graphics context on the browser's main
+thread. This design introduces two problems: it ties rendering logic
+tightly to the thread issuing commands, and it creates unpredictable
+execution timing.</p>
+<p>WebGPU decouples command recording from execution using a two-step
+process:</p>
+<ol type="1">
+<li><strong>Recording:</strong> The application records GPU commands
+into a client-side command buffer using a
+<code>GPUCommandEncoder</code>. Recording is lightweight, validates
+inputs locally, and does not communicate immediately with the GPU.</li>
+<li><strong>Submission:</strong> The finalized command buffer is
+submitted to a <code>GPUQueue</code> (via
+<code>queue.submit([commandBuffer])</code>).</li>
+</ol>
+<p>This separation allows applications to record commands across
+multiple Web Workers in parallel and submit them in batches, enabling
+true multithreaded rendering architectures on the web.</p>
+<h3 id="resource-binding-slots-vs-bind-groups">Resource Binding: Slots
+vs. Bind Groups</h3>
+<p>Resource management in WebGL relies on binding individual assets to
+fixed slots. For example, a texture must be bound to an active texture
+unit (<code>gl.activeTexture</code>, <code>gl.bindTexture</code>), and
+uniform locations must be queried and populated individually.</p>
+<p>WebGPU introduces <strong>Bind Groups</strong>
+(<code>GPUBindGroup</code>) and <strong>Bind Group Layouts</strong>
+(<code>GPUBindGroupLayout</code>). Resources such as buffers, samplers,
+and textures are bundled together into logical groups that match the
+hardware binding model of modern GPUs. Switching multiple resources in
+WebGPU requires only a single call to set a bind group, significantly
+reducing CPU-to-GPU communication costs during rendering.</p>
+<h3 id="compute-capabilities-gpgpu">Compute Capabilities (GPGPU)</h3>
+<p>WebGL was designed exclusively for rendering graphics. Running
+General-Purpose GPU (GPGPU) tasks in WebGL requires "render-to-texture"
+workarounds: data must be packed into textures, processed through
+fragment shaders, and read back via framebuffers.</p>
+<p>WebGPU treats compute as a first-class citizen alongside
+graphics:</p>
+<ul>
+<li><strong>Compute Pipelines:</strong> WebGPU provides
+<code>GPUComputePipeline</code> for running general-purpose
+algorithms.</li>
+<li><strong>Compute Shaders:</strong> Developers can execute arbitrary
+parallel computations without creating rendering contexts, textures, or
+framebuffers.</li>
+<li><strong>Shared Memory:</strong> WebGPU exposes workgroups and
+compute workgroup storage, allowing threads to share memory and
+synchronize efficiently, which is essential for machine learning models,
+physics simulations, and advanced post-processing algorithms.</li>
+</ul>
+<h3 id="shading-languages-glsl-vs-wgsl">Shading Languages: GLSL vs.
+WGSL</h3>
+<p>WebGL uses the OpenGL Shading Language (GLSL ES), which requires
+runtime compilation and translation to platform-specific shader formats,
+often leading to cross-platform shader bugs and non-standard driver
+behaviors.</p>
+<p>WebGPU introduces the <strong>WebGPU Shading Language
+(WGSL)</strong>. WGSL is tailored specifically for the WebGPU
+abstraction layer. It provides strict validation, deterministic
+execution, and a standardized intermediate representation that directly
+translates to SPIR-V (Vulkan), MSL (Metal), and HLSL/DXIL (DirectX 12),
+ensuring predictable shader behavior across all operating systems and
+devices.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

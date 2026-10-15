@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Default Clear Color Explained - webgl</title>
+    <meta name="description" content="When initializing a new WebGL rendering context, understanding state machine defaults is essential for debugging rendering issues. This article explains the exact default clear color assigned upon creating a WebGL context, its behavior with the HTML5 canv">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/web-gl-default-clear-color-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WebGL Default Clear Color Explained - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/web-gl-default-clear-color-explained" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When initializing a new WebGL rendering context, understanding state machine defaults is essential for debugging rendering issues. This article explains the exact default clear color assigned upon creating a WebGL context, its behavior with the HTML5 canv" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="webgl-default-clear-color-explained">WebGL Default Clear Color
+Explained</h1>
+<p>When initializing a new WebGL rendering context, understanding state
+machine defaults is essential for debugging rendering issues. This
+article explains the exact default clear color assigned upon creating a
+WebGL context, its behavior with the HTML5 canvas, and how to verify or
+modify it programmatically.</p>
+<p>In a newly created WebGL context, the default clear color is
+transparent black, represented in RGBA format as
+<code>(0, 0, 0, 0)</code>: Red is 0, Green is 0, Blue is 0, and Alpha is
+0.</p>
+<p>You can verify this default value directly using the
+<code>getParameter</code> method:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;canvas&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;webgl&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> defaultClearColor <span class="op">=</span> gl<span class="op">.</span><span class="fu">getParameter</span>(gl<span class="op">.</span><span class="at">COLOR_CLEAR_VALUE</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(defaultClearColor)<span class="op">;</span> <span class="co">// Float32Array [0, 0, 0, 0]</span></span></code></pre></div>
+<p>Because WebGL contexts enable alpha blending with the webpage by
+default (<code>{ alpha: true }</code>), executing
+<code>gl.clear(gl.COLOR_BUFFER_BIT)</code> with the initial clear color
+leaves the canvas completely transparent. As a result, any HTML elements
+or CSS background colors behind the <code>&lt;canvas&gt;</code> element
+remain fully visible.</p>
+<p>If the context is explicitly initialized with
+<code>{ alpha: false }</code>, the alpha channel is ignored by the
+browser compositor, and clearing the buffer with the default
+<code>(0, 0, 0, 0)</code> value results in an opaque black canvas.</p>
+<p>To change the clear color, pass values between <code>0.0</code> and
+<code>1.0</code> to <code>gl.clearColor(red, green, blue, alpha)</code>.
+For example, setting an opaque white background requires the
+following:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gl<span class="op">.</span><span class="fu">clearColor</span>(<span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gl<span class="op">.</span><span class="fu">clear</span>(gl<span class="op">.</span><span class="at">COLOR_BUFFER_BIT</span>)<span class="op">;</span></span></code></pre></div>
+<p>The specified values persist across frames until
+<code>gl.clearColor()</code> is called again with different
+arguments.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

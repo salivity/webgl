@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Security and Cross-Domain Texture Theft - webgl</title>
+    <meta name="description" content="When WebGL was introduced to modern web browsers, it brought hardware-accelerated 3D graphics directly to the web without requiring third-party plugins. However, this direct bridge between JavaScript and the underlying Graphics Processing Unit (GPU) expos">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/web-gl-security-and-cross-domain-texture-theft">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WebGL Security and Cross-Domain Texture Theft - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/web-gl-security-and-cross-domain-texture-theft" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When WebGL was introduced to modern web browsers, it brought hardware-accelerated 3D graphics directly to the web without requiring third-party plugins. However, this direct bridge between JavaScript and the underlying Graphics Processing Unit (GPU) expos" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="webgl-security-and-cross-domain-texture-theft">WebGL Security
+and Cross-Domain Texture Theft</h1>
+<p>When WebGL was introduced to modern web browsers, it brought
+hardware-accelerated 3D graphics directly to the web without requiring
+third-party plugins. However, this direct bridge between JavaScript and
+the underlying Graphics Processing Unit (GPU) exposed severe security
+vulnerabilities, most notably cross-domain texture stealing. This
+article examines how early implementations of WebGL bypassed traditional
+web isolation models, the mechanics behind unauthorized image
+extraction, and how browser vendors addressed these fundamental
+flaws.</p>
+<p>The core of the issue stemmed from how WebGL interacted with the
+browser's Same-Origin Policy (SOP). Under standard web rules, a webpage
+can display images or video elements loaded from another domain, but it
+is strictly forbidden from reading the raw pixel data via scripts unless
+the foreign domain explicitly grants permission. In early WebGL
+specifications, developers were allowed to use cross-origin media
+directly as WebGL textures. Because the graphics pipeline operates at a
+low level, this created an immediate pathway for attackers to bypass
+standard origin restrictions.</p>
+<p>Once a cross-origin resource was bound as a texture, malicious
+scripts could analyze the underlying graphic data. Attackers could
+direct users to a malicious site while they were logged into sensitive
+services (such as banking platforms, webmail, or internal intranets). If
+an authenticated resource from those services could be rendered as an
+image or an SVG snapshot, the attacker could load it into a WebGL
+texture and capture private information.</p>
+<p>Extraction occurred primarily through two methods: direct readbacks
+and timing attacks.</p>
+<p>In the simplest scenarios, early WebGL implementations failed to
+properly restrict the <code>gl.readPixels()</code> API when handling
+foreign textures, allowing the calling script to dump raw frame buffer
+data directly back into JavaScript arrays.</p>
+<p>When direct readbacks were blocked by tainting mechanisms,
+researchers demonstrated that attackers could still reconstruct images
+using GPU timing side-channels. By writing custom fragment shaders
+designed to perform complex mathematical calculations only when a pixel
+matched a specific color threshold, a script could measure how long the
+GPU took to render a frame. By iterating through color profiles and
+recording rendering duration variations, attackers could piece together
+high-resolution reconstructions of the target texture without ever
+calling a direct readback API.</p>
+<p>To eliminate cross-domain texture theft, browser vendors and the
+Khronos Group introduced mandatory Cross-Origin Resource Sharing (CORS)
+checks for all WebGL textures. Under modern standards, any image or
+video loaded into a WebGL context from an external domain must be
+explicitly served with the <code>Access-Control-Allow-Origin</code> HTTP
+header. If an unauthenticated or non-CORS resource is passed to a WebGL
+context, the browser immediately blocks texture generation or
+permanently taints the canvas, preventing any shader execution or frame
+evaluation that could leak data. Additionally, browser engines
+introduced precision reductions to high-resolution timers to mitigate
+remaining GPU-level side-channel attacks.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/webgl'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
