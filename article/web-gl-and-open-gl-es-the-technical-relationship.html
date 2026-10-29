@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL and OpenGL ES: The Technical Relationship - webgl</title>
+    <meta name="description" content="WebGL is a cross-platform, royalty-free web standard designed to bring hardware-accelerated 3D and 2D graphics directly to the browser without external plugins. Technically, WebGL is not an entirely new graphics API built from the ground up; rather, it is">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/web-gl-and-open-gl-es-the-technical-relationship">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WebGL and OpenGL ES: The Technical Relationship - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/web-gl-and-open-gl-es-the-technical-relationship" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WebGL is a cross-platform, royalty-free web standard designed to bring hardware-accelerated 3D and 2D graphics directly to the browser without external plugins. Technically, WebGL is not an entirely new graphics API built from the ground up; rather, it is" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="webgl-and-opengl-es-the-technical-relationship">WebGL and OpenGL
+ES: The Technical Relationship</h1>
+<p>WebGL is a cross-platform, royalty-free web standard designed to
+bring hardware-accelerated 3D and 2D graphics directly to the browser
+without external plugins. Technically, WebGL is not an entirely new
+graphics API built from the ground up; rather, it is a JavaScript
+binding and adaptation of the OpenGL ES (Embedded Systems) specification
+maintained by the Khronos Group. This article explains how WebGL maps to
+OpenGL ES, the direct version correlations, the underlying translation
+mechanics, and the essential technical modifications implemented to
+ensure security and cross-platform compatibility on the modern web.</p>
+<h3 id="version-mapping-and-specification-heritage">Version Mapping and
+Specification Heritage</h3>
+<p>Both WebGL and OpenGL ES are governed by the Khronos Group, ensuring
+direct architectural continuity between the two standards:</p>
+<ul>
+<li><strong>WebGL 1.0</strong> is technically derived from
+<strong>OpenGL ES 2.0</strong>. It introduced a programmable pipeline to
+the web, relying entirely on vertex and fragment shaders.</li>
+<li><strong>WebGL 2.0</strong> is based directly on the <strong>OpenGL
+ES 3.0</strong> specification. It exposes advanced features such as
+Transform Feedback, Uniform Buffer Objects, 3D textures, multiple render
+targets, and instanced rendering.</li>
+</ul>
+<p>Because WebGL adopts the OpenGL ES specification, the rendering
+pipeline, state machine design, and core function signatures in WebGL
+mirror those found in OpenGL ES.</p>
+<h3 id="shading-language-compatibility">Shading Language
+Compatibility</h3>
+<p>WebGL utilizes OpenGL ES Shading Language (GLSL ES) to execute code
+directly on the GPU:</p>
+<ul>
+<li>WebGL 1.0 implements <strong>GLSL ES 1.00</strong>, corresponding to
+OpenGL ES 2.0.</li>
+<li>WebGL 2.0 implements <strong>GLSL ES 3.00</strong>, corresponding to
+OpenGL ES 3.0.</li>
+</ul>
+<p>Apart from minor restrictions applied for security and platform
+uniformity, developers write shaders for WebGL using the exact same
+syntax, data types, precision qualifiers (<code>lowp</code>,
+<code>mediump</code>, <code>highp</code>), and built-in functions used
+in mobile and embedded OpenGL ES development.</p>
+<h3 id="technical-adaptations-for-the-browser">Technical Adaptations for
+the Browser</h3>
+<p>While WebGL mirrors OpenGL ES closely, running a low-level graphics
+API inside an untrusted web browser requires specific technical
+adaptations:</p>
+<ol type="1">
+<li><strong>Memory Management and TypedArrays:</strong> OpenGL ES is a
+C-based API where data is passed using raw pointers and arbitrary memory
+addresses. In JavaScript, direct pointer access is prohibited. WebGL
+bridges this gap using typed arrays (such as <code>Float32Array</code>
+and <code>Uint16Array</code>) to pass structured, contiguous binary data
+directly to GPU-managed buffers.</li>
+<li><strong>Security and Resource Isolation:</strong> Unlike native
+environments, the web cannot permit graphics operations that could leak
+data across origins or cause GPU crashes. WebGL introduces mandatory
+out-of-bounds checks, disallows access to uninitialized memory (clearing
+textures and buffers by default), and prevents out-of-bounds array
+indexing in shaders.</li>
+<li><strong>HTML5 Canvas Integration:</strong> Native OpenGL ES uses a
+platform abstraction layer such as EGL to interface with native
+operating system window managers. WebGL replaces this mechanism by
+attaching its rendering context directly to the HTML5
+<code>&lt;canvas&gt;</code> element via the browser's Document Object
+Model (DOM), integrating seamlessly with the browser's compositing
+engine.</li>
+</ol>
+<h3 id="the-underlying-translation-layer-angle">The Underlying
+Translation Layer (ANGLE)</h3>
+<p>On desktop platforms, native OpenGL or OpenGL ES drivers are often
+poorly maintained, non-existent, or inconsistent across hardware
+vendors. To ensure that WebGL calls function reliably, modern web
+browsers use translation layers rather than calling native OpenGL ES
+drivers directly.</p>
+<p>The most notable implementation is <strong>ANGLE (Almost Native
+Graphics Engine)</strong>, an open-source project developed by Google.
+ANGLE accepts WebGL (OpenGL ES) API commands and translates them at
+runtime into the host operating system's preferred native graphics
+API:</p>
+<ul>
+<li><strong>Direct3D 11</strong> on Windows</li>
+<li><strong>Metal</strong> on macOS and iOS</li>
+<li><strong>Vulkan</strong> on modern Linux, Android, and Windows
+systems</li>
+<li><strong>Native Desktop OpenGL</strong> where supported</li>
+</ul>
+<p>Through this architecture, WebGL preserves the programmable,
+lightweight footprint of OpenGL ES while achieving high performance and
+hardware compatibility across all major operating systems.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/web-gl-and-open-gl-es-the-technical-relationship';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Destroy a WebGL Context Properly - webgl</title>
+    <meta name="description" content="Managing GPU memory is crucial in web applications, yet WebGL lacks a single, native method to tear down an entire rendering context at once. This guide explains how to properly dispose of a WebGL context, manually free allocated GPU assets—including buff">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/how-to-destroy-a-web-gl-context-properly">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Destroy a WebGL Context Properly - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/how-to-destroy-a-web-gl-context-properly" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing GPU memory is crucial in web applications, yet WebGL lacks a single, native method to tear down an entire rendering context at once. This guide explains how to properly dispose of a WebGL context, manually free allocated GPU assets—including buff" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-destroy-a-webgl-context-properly">How to Destroy a WebGL
+Context Properly</h1>
+<p>Managing GPU memory is crucial in web applications, yet WebGL lacks a
+single, native method to tear down an entire rendering context at once.
+This guide explains how to properly dispose of a WebGL context, manually
+free allocated GPU assets—including buffers, textures, and shaders—and
+trigger explicit context loss using standard WebGL extensions to prevent
+memory leaks and performance degradation.</p>
+<h3 id="1-release-allocated-gpu-resources">1. Release Allocated GPU
+Resources</h3>
+<p>Relying solely on the browser's JavaScript garbage collector is not
+enough to clear GPU memory immediately. Before destroying the context,
+you must explicitly iterate through and delete all created WebGL
+resources.</p>
+<ul>
+<li><strong>Buffers:</strong> Call <code>gl.deleteBuffer(buffer)</code>
+for every vertex or index buffer created.</li>
+<li><strong>Textures:</strong> Call
+<code>gl.deleteTexture(texture)</code> to free texture VRAM.</li>
+<li><strong>Renderbuffers and Framebuffers:</strong> Call
+<code>gl.deleteRenderbuffer(renderbuffer)</code> and
+<code>gl.deleteFramebuffer(framebuffer)</code>.</li>
+<li><strong>Shaders and Programs:</strong> Detach shaders using
+<code>gl.detachShader(program, shader)</code>, delete individual shaders
+with <code>gl.deleteShader(shader)</code>, and finally remove the
+program with <code>gl.deleteProgram(program)</code>.</li>
+</ul>
+<h3 id="2-force-context-loss-using-the-extension">2. Force Context Loss
+Using the Extension</h3>
+<p>Because WebGL contexts are tied to the underlying graphics driver,
+the correct way to inform the browser that the context is dead is by
+using the <code>WEBGL_lose_context</code> extension.</p>
+<p>Acquiring this extension allows you to programmatically trigger the
+<code>webglcontextlost</code> event and simulate a hardware-level
+drop:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> loseContextExt <span class="op">=</span> gl<span class="op">.</span><span class="fu">getExtension</span>(<span class="st">&#39;WEBGL_lose_context&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (loseContextExt) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    loseContextExt<span class="op">.</span><span class="fu">loseContext</span>()<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Calling <code>loseContext()</code> halts all rendering operations
+immediately and tells the browser to discard internal driver resources
+associated with that context.</p>
+<h3 id="3-clear-dom-elements-and-javascript-references">3. Clear DOM
+Elements and JavaScript References</h3>
+<p>Once the context has been forced to lose its state, release all
+remaining JavaScript references to allow the garbage collector to
+reclaim CPU memory:</p>
+<ol type="1">
+<li><strong>Remove Event Listeners:</strong> Remove any resize, render,
+or context restoration listeners tied to the <code>&lt;canvas&gt;</code>
+element.</li>
+<li><strong>Remove the Canvas:</strong> Remove the
+<code>&lt;canvas&gt;</code> element from the DOM using
+<code>canvas.remove()</code>.</li>
+<li><strong>Nullify References:</strong> Set your canvas element,
+context reference (<code>gl</code>), extension instances, and cached
+assets to <code>null</code>.</li>
+<li><strong>Reset Dimensions:</strong> Optionally set
+<code>canvas.width = 1</code> and <code>canvas.height = 1</code> to
+shrink the canvas backing store before dereferencing.</li>
+</ol>
+<h3 id="complete-cleanup-example">Complete Cleanup Example</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">destroyWebGLContext</span>(gl<span class="op">,</span> canvas<span class="op">,</span> resources <span class="op">=</span> {}) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 1. Delete registered GPU resources</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (resources<span class="op">.</span><span class="at">textures</span>) resources<span class="op">.</span><span class="at">textures</span><span class="op">.</span><span class="fu">forEach</span>(t <span class="kw">=&gt;</span> gl<span class="op">.</span><span class="fu">deleteTexture</span>(t))<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (resources<span class="op">.</span><span class="at">buffers</span>) resources<span class="op">.</span><span class="at">buffers</span><span class="op">.</span><span class="fu">forEach</span>(b <span class="kw">=&gt;</span> gl<span class="op">.</span><span class="fu">deleteBuffer</span>(b))<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (resources<span class="op">.</span><span class="at">framebuffers</span>) resources<span class="op">.</span><span class="at">framebuffers</span><span class="op">.</span><span class="fu">forEach</span>(fb <span class="kw">=&gt;</span> gl<span class="op">.</span><span class="fu">deleteFramebuffer</span>(fb))<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (resources<span class="op">.</span><span class="at">renderbuffers</span>) resources<span class="op">.</span><span class="at">renderbuffers</span><span class="op">.</span><span class="fu">forEach</span>(rb <span class="kw">=&gt;</span> gl<span class="op">.</span><span class="fu">deleteRenderbuffer</span>(rb))<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (resources<span class="op">.</span><span class="at">programs</span>) {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        resources<span class="op">.</span><span class="at">programs</span><span class="op">.</span><span class="fu">forEach</span>(prog <span class="kw">=&gt;</span> {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> shaders <span class="op">=</span> gl<span class="op">.</span><span class="fu">getAttachedShaders</span>(prog)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (shaders) {</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                shaders<span class="op">.</span><span class="fu">forEach</span>(shader <span class="kw">=&gt;</span> {</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                    gl<span class="op">.</span><span class="fu">detachShader</span>(prog<span class="op">,</span> shader)<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                    gl<span class="op">.</span><span class="fu">deleteShader</span>(shader)<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                })<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            gl<span class="op">.</span><span class="fu">deleteProgram</span>(prog)<span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 2. Force the context to be lost</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> loseContextExt <span class="op">=</span> gl<span class="op">.</span><span class="fu">getExtension</span>(<span class="st">&#39;WEBGL_lose_context&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (loseContextExt) {</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        loseContextExt<span class="op">.</span><span class="fu">loseContext</span>()<span class="op">;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 3. Clean up the DOM and shrink the drawing buffer</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (canvas) {</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        canvas<span class="op">.</span><span class="at">width</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        canvas<span class="op">.</span><span class="at">height</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (canvas<span class="op">.</span><span class="at">parentNode</span>) {</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>            canvas<span class="op">.</span><span class="at">parentNode</span><span class="op">.</span><span class="fu">removeChild</span>(canvas)<span class="op">;</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 4. Clear all references</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Executing these steps in order ensures that both the CPU and GPU
+release all handles, preventing memory growth during dynamic canvas
+creation and destruction.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/how-to-destroy-a-web-gl-context-properly';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>experimental-webgl vs WebGL: Key Differences - webgl</title>
+    <meta name="description" content="When rendering hardware-accelerated 2D and 3D graphics inside an HTML &lt;canvas&gt; element, developers must request a rendering context using JavaScript. The primary difference between experimental-webgl and standard webgl lies in browser support and specific">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/experimental-webgl-vs-web-gl-key-differences">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="experimental-webgl vs WebGL: Key Differences - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/experimental-webgl-vs-web-gl-key-differences" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When rendering hardware-accelerated 2D and 3D graphics inside an HTML &lt;canvas&gt; element, developers must request a rendering context using JavaScript. The primary difference between experimental-webgl and standard webgl lies in browser support and specific" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="experimental-webgl-vs-webgl-key-differences">experimental-webgl
+vs WebGL: Key Differences</h1>
+<p>When rendering hardware-accelerated 2D and 3D graphics inside an HTML
+<code>&lt;canvas&gt;</code> element, developers must request a rendering
+context using JavaScript. The primary difference between
+<code>experimental-webgl</code> and standard <code>webgl</code> lies in
+browser support and specification maturity:
+<code>experimental-webgl</code> is an obsolete vendor-prefixed context
+name used during the initial rollout of the technology, whereas
+<code>webgl</code> is the official, standardized identifier recognized
+by modern browsers conforming to the Khronos Group specifications.</p>
+<h3 id="historical-context-and-evolution">Historical Context and
+Evolution</h3>
+<p>During the early development of WebGL (around 2009–2011), browser
+vendors like Google (Chrome), Apple (Safari), and Mozilla (Firefox) were
+actively testing implementations of the Khronos Group's draft
+specifications. Because the API was still evolving and not yet
+officially ratified, vendors placed the implementation behind the
+context identifier <code>"experimental-webgl"</code>. This prevented
+developers from relying on an unstable API that might change before the
+standard was finalized.</p>
+<p>Once the WebGL 1.0 specification became an official web standard,
+browsers implemented the stable context name <code>"webgl"</code>.</p>
+<h3 id="technical-differences">Technical Differences</h3>
+<p>From an API perspective, modern implementations of
+<code>experimental-webgl</code> and <code>webgl</code> are practically
+identical because browsers that maintain the legacy prefix simply alias
+it to the modern implementation. However, key technical distinctions
+existed during their lifecycles:</p>
+<ul>
+<li><strong>Standard Conformance:</strong> The <code>webgl</code>
+context strictly implements the Khronos WebGL 1.0 specification,
+guaranteeing uniform behavior across platforms. Early versions of
+<code>experimental-webgl</code> frequently contained incomplete
+features, missing extensions, and vendor-specific quirks.</li>
+<li><strong>Security and Stability:</strong> Early
+<code>experimental-webgl</code> implementations lacked the robust
+driver-level blacklisting and crash protections present in the finalized
+standard, occasionally leading to GPU driver crashes or security
+vulnerabilities.</li>
+<li><strong>Specification Version:</strong>
+<code>experimental-webgl</code> only ever applied to the WebGL 1.0
+pipeline (based on OpenGL ES 2.0). It has no relation to WebGL 2.0,
+which uses the <code>"webgl2"</code> identifier.</li>
+</ul>
+<h3 id="legacy-browser-compatibility">Legacy Browser Compatibility</h3>
+<p>The most notable historical use case for
+<code>experimental-webgl</code> was Internet Explorer 11. Microsoft
+introduced partial WebGL support in IE11 using only the
+<code>"experimental-webgl"</code> context identifier, never officially
+updating the engine to support the standard <code>"webgl"</code> string.
+Consequently, legacy applications had to support both strings to
+function on Windows 7 and 8.1 running IE11.</p>
+<p>Historically, the standard boilerplate for initializing a WebGL
+context required a fallback chain:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&quot;myCanvas&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;webgl&quot;</span>) <span class="op">||</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;experimental-webgl&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>gl) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;WebGL is not supported by your browser.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="modern-usage-and-best-practices">Modern Usage and Best
+Practices</h3>
+<p>Today, <code>experimental-webgl</code> is considered fully
+deprecated. All modern evergreen browsers—including Google Chrome,
+Mozilla Firefox, Apple Safari, and Microsoft Edge—fully support the
+standard <code>"webgl"</code> context identifier, as well as
+<code>"webgl2"</code>.</p>
+<p>Unless an application is explicitly required to run on obsolete
+environments like Internet Explorer 11, developers should exclusively
+use <code>canvas.getContext("webgl")</code> for WebGL 1.0 or
+<code>canvas.getContext("webgl2")</code> for modern WebGL 2.0
+implementations. Relying on the experimental prefix is no longer
+necessary or recommended for contemporary web development.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/experimental-webgl-vs-web-gl-key-differences';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

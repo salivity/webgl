@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Cost of Multiple WebGL Canvases - webgl</title>
+    <meta name="description" content="Using multiple active WebGL canvases on a single webpage introduces significant performance bottlenecks, primarily driven by excessive GPU memory consumption, costly context switching, and strict browser-enforced limits. While separating rendering tasks a">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/performance-cost-of-multiple-web-gl-canvases">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Performance Cost of Multiple WebGL Canvases - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/performance-cost-of-multiple-web-gl-canvases" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Using multiple active WebGL canvases on a single webpage introduces significant performance bottlenecks, primarily driven by excessive GPU memory consumption, costly context switching, and strict browser-enforced limits. While separating rendering tasks a" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="performance-cost-of-multiple-webgl-canvases">Performance Cost of
+Multiple WebGL Canvases</h1>
+<p>Using multiple active WebGL canvases on a single webpage introduces
+significant performance bottlenecks, primarily driven by excessive GPU
+memory consumption, costly context switching, and strict
+browser-enforced limits. While separating rendering tasks across
+multiple canvas elements can simplify DOM layout, it forces the hardware
+and browser to duplicate resources and constantly swap states. For
+performance-critical applications, understanding these hidden overheads
+is essential for avoiding dropped frames, device throttling, and
+unexpected context loss.</p>
+<h3 id="hardware-context-switching">Hardware Context Switching</h3>
+<p>Each WebGL canvas creates an isolated rendering context with its own
+distinct state machine. When the GPU switches between different contexts
+during a single render frame, it must save and reload pipeline
+configurations, shader bindings, and buffer states. This rapid context
+switching disrupts the GPU’s parallel execution pipeline, causing
+pipeline stalls and significantly lowering frame rates compared to
+batching operations within a single context.</p>
+<h3 id="memory-redundancy-and-vram-overhead">Memory Redundancy and VRAM
+Overhead</h3>
+<p>WebGL contexts do not share resources like textures, geometry
+buffers, or compiled shader programs natively. If five separate canvases
+display the same 3D model or use the same texture, those assets must be
+uploaded to VRAM five separate times. In addition, each context
+allocates its own set of internal framebuffers, depth buffers, and color
+buffers corresponding to its canvas resolution. On mobile devices or
+integrated GPUs with shared system memory, this redundant allocation can
+quickly trigger operating system memory limits.</p>
+<h3 id="hard-context-limits-and-context-loss">Hard Context Limits and
+Context Loss</h3>
+<p>Web browsers enforce strict limits on the maximum number of
+simultaneous active WebGL contexts to protect system stability.</p>
+<ul>
+<li>Chrome and Chromium-based browsers typically allow between 8 and 16
+active contexts.</li>
+<li>Firefox and Safari enforce similar conservative thresholds.</li>
+</ul>
+<p>When an application exceeds the host platform's maximum context
+limit, the browser automatically destroys the oldest context without
+warning. This triggers the <code>webglcontextlost</code> event, causing
+elements higher up the page to render as blank or black rectangles
+unless elaborate context-restoration logic is implemented.</p>
+<h3 id="browser-compositing-costs">Browser Compositing Costs</h3>
+<p>The browser’s rendering engine treats each WebGL canvas as an
+independent layer that must be synchronized and composited with standard
+DOM elements, text, and CSS styles. Having dozens of dynamic canvas
+layers forces the browser compositor to perform continuous blending,
+clipping, and coordinate transformation operations. This increases CPU
+utilization on the main thread and introduces compositor thread latency,
+leading to janky scrolling and delayed user input responses.</p>
+<h3 id="multiple-render-loops">Multiple Render Loops</h3>
+<p>Running separate <code>requestAnimationFrame</code> render loops for
+each canvas produces inefficient scheduling. If several canvases update
+concurrently without synchronized timing, the CPU experiences increased
+thread overhead. Even off-screen canvases continue to consume CPU and
+GPU cycles unless developers manually implement intersection observers
+to pause their render cycles when scrolled out of view.</p>
+<h3 id="the-standard-alternative-viewport-splitting">The Standard
+Alternative: Viewport Splitting</h3>
+<p>To achieve the appearance of multiple WebGL displays without the
+associated overhead, production architectures rely on a single WebGL
+context. Developers either render to an offscreen canvas and copy the
+pixels to multiple lightweight 2D canvases, or overlay a single
+fullscreen WebGL canvas behind the DOM and use
+<code>gl.viewport()</code> and <code>gl.scissor()</code> to project
+individual scenes precisely beneath placeholder HTML elements. This
+technique maintains one shared asset pool in VRAM, utilizes one
+continuous pipeline, and avoids context loss entirely.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/performance-cost-of-multiple-web-gl-canvases';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

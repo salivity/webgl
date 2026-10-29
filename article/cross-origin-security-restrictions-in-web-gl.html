@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Origin Security Restrictions in WebGL - webgl</title>
+    <meta name="description" content="WebGL enforces strict security boundaries governed by the Same-Origin Policy (SOP) and Cross-Origin Resource Sharing (CORS) mechanisms to prevent malicious websites from extracting sensitive data across domains. Because WebGL allows direct GPU access and">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/cross-origin-security-restrictions-in-web-gl">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Cross-Origin Security Restrictions in WebGL - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/cross-origin-security-restrictions-in-web-gl" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WebGL enforces strict security boundaries governed by the Same-Origin Policy (SOP) and Cross-Origin Resource Sharing (CORS) mechanisms to prevent malicious websites from extracting sensitive data across domains. Because WebGL allows direct GPU access and" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="cross-origin-security-restrictions-in-webgl">Cross-Origin
+Security Restrictions in WebGL</h1>
+<p>WebGL enforces strict security boundaries governed by the Same-Origin
+Policy (SOP) and Cross-Origin Resource Sharing (CORS) mechanisms to
+prevent malicious websites from extracting sensitive data across
+domains. Because WebGL allows direct GPU access and programmatic reading
+of pixel data, unauthorized cross-origin images, videos, and canvas
+elements are strictly barred from being uploaded as textures without
+explicit cryptographic and server authorization.</p>
+<h2 id="the-core-threat-information-leakage">The Core Threat:
+Information Leakage</h2>
+<p>In a standard HTML context, browsers allow elements like
+<code>&lt;img&gt;</code> to render cross-origin resources without CORS.
+However, WebGL fundamentally changes the security equation. Fragment
+shaders can inspect, sample, and manipulate pixel values directly, and
+operations like <code>gl.readPixels()</code> allow raw graphical memory
+to be extracted back into JavaScript.</p>
+<p>Without restrictions, an attacker could load a sensitive
+document—such as a user's webmail inbox, banking dashboard, or intranet
+portal—into a WebGL texture and use shaders to read the text and imagery
+byte-by-byte. Even without direct pixel-read APIs, subtle timing attacks
+on GPU execution times can infer the content of loaded images.</p>
+<h2 id="canvas-tainting-vs-webgl-execution-blocks">Canvas Tainting vs.
+WebGL Execution Blocks</h2>
+<p>The standard HTML5 2D Canvas allows untrusted cross-origin images to
+be drawn, but it applies a "tainted" flag that permanently disables
+methods like <code>toDataURL()</code>, <code>toBlob()</code>, or
+<code>getImageData()</code>.</p>
+<p>WebGL adopts a stricter posture:</p>
+<ul>
+<li>WebGL completely refuses to load a cross-origin element into texture
+memory using <code>texImage2D</code> or <code>texSubImage2D</code>
+unless proper CORS validation has occurred.</li>
+<li>If an application attempts to pass an untrusted cross-origin source
+into a WebGL context, the browser immediately throws a
+<code>SECURITY_ERR</code> DOM exception, halting the texture upload
+entirely.</li>
+</ul>
+<h2 id="cors-requirements-for-textures">CORS Requirements for
+Textures</h2>
+<p>To load an external visual resource—such as an image or video hosted
+on a Content Delivery Network (CDN)—into a WebGL texture, two criteria
+must be satisfied:</p>
+<ol type="1">
+<li><p><strong>Client-Side Declaration:</strong> The HTML element must
+explicitly request cross-origin privileges before the asset begins
+loading. This is achieved by setting the <code>crossOrigin</code>
+property:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> image <span class="op">=</span> <span class="kw">new</span> <span class="fu">Image</span>()<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>image<span class="op">.</span><span class="at">crossOrigin</span> <span class="op">=</span> <span class="st">&quot;anonymous&quot;</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>image<span class="op">.</span><span class="at">src</span> <span class="op">=</span> <span class="st">&quot;https://cdn.example.com/texture.jpg&quot;</span><span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Server-Side Authorization:</strong> The remote server
+hosting the asset must respond to the HTTP request with the appropriate
+CORS header:</p>
+<pre class="http"><code>Access-Control-Allow-Origin: *</code></pre>
+<p>Or explicitly specify the requesting origin:</p>
+<pre class="http"><code>Access-Control-Allow-Origin: https://yourdomain.com</code></pre></li>
+</ol>
+<p>If the server omits this header or explicitly rejects the origin, the
+image will trigger an <code>onerror</code> event, and passing it to
+<code>gl.texImage2D()</code> will fail.</p>
+<h2 id="redirects-and-http-caching-pitfalls">Redirects and HTTP Caching
+Pitfalls</h2>
+<p>Browsers cache resources based on their request headers. If an image
+is first loaded by an ordinary <code>&lt;img&gt;</code> tag without the
+<code>crossorigin</code> attribute, the browser may cache the response
+without CORS headers. If WebGL later attempts to load the same asset
+with <code>crossOrigin = "anonymous"</code>, the browser might serve the
+cached version lacking the <code>Access-Control-Allow-Origin</code>
+header, causing an unexpected security failure. Assets intended for
+WebGL textures must consistently use CORS headers across all requests or
+be served with appropriate <code>Vary: Origin</code> HTTP headers.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/cross-origin-security-restrictions-in-web-gl';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
