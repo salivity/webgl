@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Name for WebGL Rendering Context - webgl</title>
+    <meta name="description" content="This article covers the standard naming conventions used for the WebGL rendering context in JavaScript scripts. Readers will learn the ubiquitous variable name assigned to this object, the historical and practical reasons behind the convention, how the co">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/standard-name-for-web-gl-rendering-context">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Standard Name for WebGL Rendering Context - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/standard-name-for-web-gl-rendering-context" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article covers the standard naming conventions used for the WebGL rendering context in JavaScript scripts. Readers will learn the ubiquitous variable name assigned to this object, the historical and practical reasons behind the convention, how the co" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="standard-name-for-webgl-rendering-context">Standard Name for
+WebGL Rendering Context</h1>
+<p>This article covers the standard naming conventions used for the
+WebGL rendering context in JavaScript scripts. Readers will learn the
+ubiquitous variable name assigned to this object, the historical and
+practical reasons behind the convention, how the context is
+instantiated, and how adhering to this pattern improves code clarity and
+alignment with graphics standards.</p>
+<p>In JavaScript applications, the WebGL rendering context object is
+almost universally named <code>gl</code>.</p>
+<p>Developers obtain this context from an HTML
+<code>&lt;canvas&gt;</code> element using the <code>getContext</code>
+method. A typical initialization looks like this:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&quot;myCanvas&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;webgl&quot;</span>) <span class="op">||</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&quot;experimental-webgl&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>gl) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Unable to initialize WebGL.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>The identifier <code>gl</code> is preferred for several key
+reasons:</p>
+<ul>
+<li><strong>Heritage from OpenGL:</strong> WebGL is directly derived
+from OpenGL ES (Embedded Systems). In standard C-based OpenGL
+programming, core API functions begin with the prefix <code>gl</code>,
+such as <code>glClear()</code> or <code>glBindBuffer()</code>.</li>
+<li><strong>API Ergonomics:</strong> In WebGL, operations are methods
+called on the context object itself rather than standalone global
+functions. Naming the context <code>gl</code> allows method calls like
+<code>gl.clear()</code> and <code>gl.bindBuffer()</code>, closely
+mirroring traditional OpenGL syntax and making the code feel familiar to
+graphics programmers.</li>
+<li><strong>Brevity:</strong> WebGL programs frequently invoke dozens of
+context operations per frame. Using a concise two-letter variable
+reduces visual clutter in performance-critical rendering loops.</li>
+<li><strong>Community and Documentation Consistency:</strong> Official
+specifications from the Khronos Group, MDN Web Docs, and popular
+development tutorials use <code>gl</code> by default. Adhering to this
+standard ensures higher readability across shared codebases and
+libraries.</li>
+</ul>
+<p>While developers can technically assign the context to any valid
+variable name—such as <code>context</code>,
+<code>renderingContext</code>, or <code>gl2</code> when specifically
+targeting WebGL 2.0—<code>gl</code> remains the definitive industry
+convention.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/standard-name-for-web-gl-rendering-context';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

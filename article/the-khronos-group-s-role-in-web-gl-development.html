@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Khronos Group&#39;s Role in WebGL Development - webgl</title>
+    <meta name="description" content="The Khronos Group is the non-profit industry consortium responsible for the creation, maintenance, and standardization of WebGL. By bringing together major browser vendors, hardware manufacturers, and developers, Khronos defines the open, royalty-free spe">
+    <link rel="canonical" href="https://salivity.github.io/webgl/article/the-khronos-group-s-role-in-web-gl-development">
+    <link rel="search" type="application/opensearchdescription+xml" title="webgl" href="/webgl/opensearch.xml">
+    <link rel="icon" href="/webgl/favicon.ico">
+    <link rel="stylesheet" href="/webgl/css/style.css">
+    <link media="print" rel="stylesheet" href="/webgl/css/print.css">
+    <script src="/webgl/js/fuse.min.js"></script>
+    <script src="/webgl/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Khronos Group&#39;s Role in WebGL Development - webgl" />
+    <meta property="og:url" content="https://salivity.github.io/webgl/article/the-khronos-group-s-role-in-web-gl-development" />
+    <meta property="og:image" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/webgl/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Khronos Group is the non-profit industry consortium responsible for the creation, maintenance, and standardization of WebGL. By bringing together major browser vendors, hardware manufacturers, and developers, Khronos defines the open, royalty-free spe" />
+    <link rel="manifest" href="/webgl/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/webgl/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>webgl</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/webgl/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="the-khronos-groups-role-in-webgl-development">The Khronos
+Group's Role in WebGL Development</h1>
+<p>The Khronos Group is the non-profit industry consortium responsible
+for the creation, maintenance, and standardization of WebGL. By bringing
+together major browser vendors, hardware manufacturers, and developers,
+Khronos defines the open, royalty-free specifications that allow web
+browsers to render high-performance, hardware-accelerated 3D and 2D
+graphics without plugins. This article details the specific
+responsibilities and technical contributions the Khronos Group brings to
+the WebGL ecosystem.</p>
+<h3 id="defining-the-technical-specifications">Defining the Technical
+Specifications</h3>
+<p>The primary function of the Khronos Group is creating and publishing
+the official WebGL API specifications. Rather than building a web
+graphics standard from scratch, Khronos adapted its existing native
+graphics APIs for the web environment:</p>
+<ul>
+<li><strong>WebGL 1.0:</strong> Closely mapped to the <strong>OpenGL ES
+2.0</strong> specification, bringing programmable shader-based 3D
+graphics to HTML5 canvases.</li>
+<li><strong>WebGL 2.0:</strong> Based on the <strong>OpenGL ES
+3.0</strong> specification, introducing features like transform
+feedback, multiple render targets, uniform buffer objects, and improved
+texture compression support.</li>
+</ul>
+<p>Khronos designs these specifications to preserve the performance of
+low-level native graphics while adapting the API to JavaScript semantics
+and web design patterns.</p>
+<h3 id="facilitating-the-webgl-working-group">Facilitating the WebGL
+Working Group</h3>
+<p>WebGL is not developed in isolation; it is managed by the
+<strong>WebGL Working Group</strong>, a specialized committee chartered
+by the Khronos Group. This working group includes key industry players,
+such as:</p>
+<ul>
+<li><strong>Browser Vendors:</strong> Google (Chrome), Mozilla
+(Firefox), Apple (Safari), and Microsoft (Edge).</li>
+<li><strong>GPU and Hardware Vendors:</strong> NVIDIA, AMD, Intel, Arm,
+and Qualcomm.</li>
+</ul>
+<p>Khronos acts as a neutral ground where these competing entities
+collaborate. This structure ensures that the WebGL standard is supported
+universally across all modern desktop and mobile browsers without
+fragmenting into vendor-specific dialects.</p>
+<h3 id="conformance-testing-and-certification">Conformance Testing and
+Certification</h3>
+<p>To guarantee consistent behavior across diverse operating systems and
+graphics cards, Khronos maintains the <strong>WebGL Conformance Test
+Suite (CTS)</strong>.</p>
+<p>Hardware and browser implementations must pass thousands of automated
+tests verifying correct rendering behavior, precision standards, and API
+compliance. Only browser implementations that pass the CTS can
+officially claim WebGL conformance and use the WebGL trademark. This
+strict quality assurance process guarantees cross-platform reliability
+for developers.</p>
+<h3 id="addressing-web-specific-security">Addressing Web-Specific
+Security</h3>
+<p>Native GPU APIs assume the running application is trusted. On the
+web, arbitrary code executes automatically when visiting a website,
+requiring strict security boundaries. The Khronos Group works alongside
+security researchers and browser vendors to modify native graphics
+features for safe web usage. Key security contributions include:</p>
+<ul>
+<li><strong>Resource Isolation:</strong> Preventing malicious scripts
+from reading residual data left in GPU memory by other applications or
+browser tabs.</li>
+<li><strong>Denial of Service (DoS) Prevention:</strong> Enforcing
+robust context loss and recovery mechanisms so an intensive shader
+cannot freeze or crash the host operating system.</li>
+<li><strong>Timing Attack Mitigations:</strong> Standardizing shader
+compilation and query behavior to reduce the risk of side-channel
+attacks via GPU execution timing.</li>
+</ul>
+<h3 id="guiding-ecosystem-evolution">Guiding Ecosystem Evolution</h3>
+<p>Beyond the core specification, Khronos manages WebGL extensions,
+allowing hardware vendors to introduce advanced features—such as
+anisotropic filtering or new texture formats—before incorporating them
+into future core standards.</p>
+<p>Khronos also manages the broader 3D web graphics ecosystem by
+standardizing complementary assets, such as <strong>glTF</strong> (the
+transmission format for 3D models), and coordinating how WebGL coexists
+alongside emerging modern standards like WebGPU.</p></article>
+        <div id='disqus_thread'></div>
+        <script>
+
+            var disqus_config = function () {
+                this.page.url =         'https://salivity.github.io/webgl/article/the-khronos-group-s-role-in-web-gl-development';  
+                //this.page.identifier =  PAGE_IDENTIFIER; 
+            };
+            
+            (function() {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://salivity-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/webgl/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/webgl/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

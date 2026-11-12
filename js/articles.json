@@ -1,0 +1,230 @@
+[
+  [
+    38,
+    "How CORS Affects WebGL Image Textures",
+    "Loading external image assets into WebGL is governed by strict Cross-Origin Resource Sharing (CORS) rules enforced by modern web browsers to prevent data exfiltration. While standard HTML elements can display cross-origin images without restriction, WebGL",
+    false
+  ],
+  [
+    37,
+    "WebGL Security and Cross-Domain Texture Theft",
+    "When WebGL was introduced to modern web browsers, it brought hardware-accelerated 3D graphics directly to the web without requiring third-party plugins. However, this direct bridge between JavaScript and the underlying Graphics Processing Unit (GPU) expos",
+    false
+  ],
+  [
+    36,
+    "How Browsers Secure WebGL Against Exploits",
+    "WebGL provides web applications with direct access to hardware-accelerated 3D graphics, creating a bridge between untrusted web content and the system's graphics processing unit (GPU). Because GPU drivers and hardware are historically designed for perform",
+    false
+  ],
+  [
+    35,
+    "How the WebGL Standard Is Updated and Evolved",
+    "The WebGL standard evolves through a consensus-driven process managed by the Khronos Group and its dedicated WebGL Working Group, which includes major web browser vendors and hardware manufacturers. This article outlines the formal stages through which th",
+    false
+  ],
+  [
+    34,
+    "How GPU Driver Blacklists Affect WebGL Availability",
+    "GPU driver blacklists—often called blocklists—are safety mechanisms used by major web browsers to prevent unstable, buggy, or insecure graphics hardware and drivers from crashing a user's system. When a computer's specific GPU and driver version match an",
+    false
+  ],
+  [
+    33,
+    "Why WebGL Instead of Native OpenGL for Web Apps",
+    "WebGL was chosen over direct native OpenGL bindings for web browsers primarily to solve critical challenges surrounding security, cross-platform consistency, and browser integration. While native OpenGL offers raw, low-overhead access to the GPU, exposing",
+    false
+  ],
+  [
+    32,
+    "Architectural Differences Between WebGL and WebGPU",
+    "This article examines the primary architectural differences between WebGL and WebGPU, tracing the evolution from the legacy OpenGL state machine to modern, explicit GPU programming on the web. It covers key distinctions in native API mapping, state manage",
+    false
+  ],
+  [
+    31,
+    "How WebGL Revolutionized Browser Gaming",
+    "The widespread adoption of WebGL has fundamentally transformed browser-based gaming by delivering hardware-accelerated 2D and 3D graphics directly to web browsers without relying on third-party plugins. This article examines how WebGL eliminated proprieta",
+    false
+  ],
+  [
+    30,
+    "Best Mobile OS for Hardware-Accelerated WebGL",
+    "Hardware-accelerated WebGL enables modern mobile browsers to render complex 2D and 3D graphics directly on the device's GPU without plugins. When evaluating mobile operating systems for WebGL reliability, Apple’s iOS and Google’s Android dominate the mark",
+    false
+  ],
+  [
+    29,
+    "WebGL Feature Detection for Browser Compatibility",
+    "Programmatic feature detection is the most reliable method for ensuring WebGL compatibility across diverse browsers and hardware configurations. Rather than relying on fragile user-agent sniffing, feature detection involves dynamically querying the browse",
+    false
+  ],
+  [
+    28,
+    "Which Browsers Support WebGL Hardware Acceleration?",
+    "WebGL hardware acceleration allows web browsers to leverage a device’s graphics processing unit (GPU) to render high-performance 2D and 3D graphics without third-party plugins. Today, every major modern web browser across desktop and mobile platforms nati",
+    false
+  ],
+  [
+    27,
+    "The Khronos Group's Role in WebGL Development",
+    "The Khronos Group is the non-profit industry consortium responsible for the creation, maintenance, and standardization of WebGL. By bringing together major browser vendors, hardware manufacturers, and developers, Khronos defines the open, royalty-free spe",
+    false
+  ],
+  [
+    26,
+    "Mozilla's Role in the Early Development of WebGL",
+    "WebGL transformed internet graphics by enabling hardware-accelerated 3D rendering natively inside the browser without third-party plugins. Mozilla served as the primary catalyst for this revolution, originating the experimental prototypes that proved web-",
+    false
+  ],
+  [
+    25,
+    "What OpenGL ES Version Is WebGL 2.0 Based On?",
+    "WebGL 2.0 represents a major evolutionary leap for 3D graphics inside modern web browsers, providing near-native rendering capabilities without external plugins. This article explores the precise embedded graphics specification that serves as the strict t",
+    false
+  ],
+  [
+    24,
+    "What Version of OpenGL ES Is WebGL 1.0 Based On?",
+    "This article identifies the specific version of OpenGL ES that serves as the foundation for WebGL 1.0, detailing why this specification was selected and how it translates low-level hardware graphics to the web. It also explores the core capabilities intro",
+    false
+  ],
+  [
+    23,
+    "WebGL and OpenGL ES: The Technical Relationship",
+    "WebGL is a cross-platform, royalty-free web standard designed to bring hardware-accelerated 3D and 2D graphics directly to the browser without external plugins. Technically, WebGL is not an entirely new graphics API built from the ground up; rather, it is",
+    false
+  ],
+  [
+    22,
+    "Who Maintains the WebGL Specification?",
+    "WebGL allows modern web browsers to render complex 2D and 3D graphics directly on your screen using hardware acceleration without third-party plugins. This article identifies the organization responsible for maintaining and advancing the WebGL specificati",
+    false
+  ],
+  [
+    21,
+    "When Was WebGL First Officially Released?",
+    "This article covers the history and milestone public debut of WebGL, identifying the exact date the technology was officially introduced. It details the release of WebGL 1.0, the organizations involved in its creation, and how this standard transformed 3D",
+    false
+  ],
+  [
+    20,
+    "Overlay HTML Elements on a WebGL Canvas",
+    "Overlaying standard HTML DOM elements over a WebGL canvas allows developers to create rich user interfaces, interactive annotations, and accessible text layers directly integrated with 3D scenes. This guide covers the essential CSS layout techniques for s",
+    false
+  ],
+  [
+    19,
+    "WebGL and Canvas CSS: How Styling Affects Rendering",
+    "Applying CSS styling directly to an HTML5 canvas hosting a WebGL context creates a clear separation between the canvas's internal drawing buffer and its visual representation on the web page. While WebGL renders pixels directly into the canvas's internal",
+    false
+  ],
+  [
+    18,
+    "Performance Cost of Multiple WebGL Canvases",
+    "Using multiple active WebGL canvases on a single webpage introduces significant performance bottlenecks, primarily driven by excessive GPU memory consumption, costly context switching, and strict browser-enforced limits. While separating rendering tasks a",
+    false
+  ],
+  [
+    17,
+    "Using Multiple WebGL Contexts on a Single Web Page",
+    "Yes, multiple independent WebGL contexts can exist simultaneously on a single web page, but doing so comes with strict browser-enforced limits and significant performance trade-offs. While you can initialize separate rendering contexts across different <c",
+    false
+  ],
+  [
+    16,
+    "How to Destroy a WebGL Context Properly",
+    "Managing GPU memory is crucial in web applications, yet WebGL lacks a single, native method to tear down an entire rendering context at once. This guide explains how to properly dispose of a WebGL context, manually free allocated GPU assets—including buff",
+    false
+  ],
+  [
+    15,
+    "Cross-Origin Security Restrictions in WebGL",
+    "WebGL enforces strict security boundaries governed by the Same-Origin Policy (SOP) and Cross-Origin Resource Sharing (CORS) mechanisms to prevent malicious websites from extracting sensitive data across domains. Because WebGL allows direct GPU access and",
+    false
+  ],
+  [
+    14,
+    "How to Check Browser WebGL Version Support",
+    "WebGL enables high-performance 2D and 3D interactive graphics within any compatible web browser without requiring third-party plugins. This article provides a quick guide to determining the exact WebGL version (such as WebGL 1.0 or WebGL 2.0) supported by",
+    false
+  ],
+  [
+    13,
+    "WebGL Default Clear Color Explained",
+    "When initializing a new WebGL rendering context, understanding state machine defaults is essential for debugging rendering issues. This article explains the exact default clear color assigned upon creating a WebGL context, its behavior with the HTML5 canv",
+    false
+  ],
+  [
+    12,
+    "How WebGL Handles Geometry Outside Canvas Boundaries",
+    "When rendering 3D or 2D scenes, WebGL frequently encounters geometry that extends past the edges of the visible rendering area. Rather than throwing errors or rendering off-screen pixels, WebGL relies on an automated hardware pipeline feature known as cli",
+    false
+  ],
+  [
+    11,
+    "experimental-webgl vs WebGL: Key Differences",
+    "When rendering hardware-accelerated 2D and 3D graphics inside an HTML <canvas> element, developers must request a rendering context using JavaScript. The primary difference between experimental-webgl and standard webgl lies in browser support and specific",
+    false
+  ],
+  [
+    10,
+    "Restore Lost WebGL Context After Hardware Reset",
+    "Handling WebGL context loss is an essential requirement for building resilient web graphics applications. When a GPU experiences a hardware reset, driver update, or resource exhaustion, the browser discards the WebGL context and wipes all stored GPU resou",
+    false
+  ],
+  [
+    9,
+    "Handling WebGL Context Lost Events Robustly",
+    "WebGL applications must be prepared to handle context loss, which occurs when the operating system or browser resets the GPU due to driver crashes, memory pressure, power management, or device switching. When a context is lost, all allocated GPU resources",
+    false
+  ],
+  [
+    8,
+    "How to Set WebGL Viewport Dimensions Manually",
+    "This article explains how to manually set the viewport dimensions in WebGL using the gl.viewport() method. You will learn the syntax of this function, what each parameter represents, how WebGL maps coordinates to screen space, and how to properly handle v",
+    false
+  ],
+  [
+    7,
+    "How Canvas Resizing Affects WebGL Viewport",
+    "When you dynamically resize an HTML canvas, the internal WebGL viewport does not automatically update to match the new dimensions. While changing the canvas size alters the underlying drawing buffer, WebGL retains its previously configured coordinate mapp",
+    false
+  ],
+  [
+    6,
+    "Standard Name for WebGL Rendering Context",
+    "This article covers the standard naming conventions used for the WebGL rendering context in JavaScript scripts. Readers will learn the ubiquitous variable name assigned to this object, the historical and practical reasons behind the convention, how the co",
+    false
+  ],
+  [
+    5,
+    "How to Clear Canvas Background Color in WebGL",
+    "Clearing the canvas background color in WebGL is an essential first step in the rendering loop to ensure previous frames do not bleed into the current render. This process involves setting a target color state using the WebGL context and then executing a",
+    false
+  ],
+  [
+    4,
+    "Understanding preserveDrawingBuffer in WebGL",
+    "This article explains the purpose, technical mechanics, and practical implications of the preserveDrawingBuffer attribute in WebGL. It covers how this configuration affects frame rendering, why it defaults to disabled, the performance trade-offs of enabli",
+    false
+  ],
+  [
+    3,
+    "Setting Context Attributes in WebGL",
+    "When initializing a WebGL rendering context, you can customize performance, graphics capabilities, and buffer behavior by passing an optional configuration object to the canvas context retrieval method. This guide details how to supply context attributes",
+    false
+  ],
+  [
+    2,
+    "What Happens If Your Browser Does Not Support WebGL",
+    "When a web browser lacks native WebGL (Web Graphics Library) support, it cannot leverage the device's graphics processing unit (GPU) to render interactive 2D and 3D graphics within a webpage. Depending on how the browser is configured and how the website",
+    false
+  ],
+  [
+    1,
+    "How to Get a WebGL Context from HTML Canvas",
+    "To render hardware-accelerated 3D and 2D graphics in a web browser, you must obtain a \"WebGL\" rendering context from an HTML <canvas> element. This article explains how to select a canvas element in JavaScript, request a WebGL or WebGL 2 context using the",
+    false
+  ]
+]
